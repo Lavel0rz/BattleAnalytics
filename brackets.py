@@ -48,13 +48,48 @@ st.title('Battler Analyzer')
 # User input for Battle ID
 battle_id = st.text_input('Analyze Battle!', placeholder='Input Battle ID')
 
-# Check if the battle_id is empty
 if not battle_id:
     st.warning('Please input a Battle ID to analyze.')
 else:
-    # Read the CSV files
-    df1 = pd.read_csv('brackets.csv')
-    df2 = pd.read_csv('brackets2.csv')
+    # Read the total_battles.csv to determine the round for the given Battle ID
+    total_battles_df = pd.read_csv('total_battles.csv')
+
+    # Find the round for the given Battle ID
+    bracket_info = total_battles_df[total_battles_df['Battle ID'] == battle_id]['Bracket'].values[0]
+    round_info = total_battles_df[total_battles_df['Battle ID'] == battle_id]
+   
+
+    if round_info.empty:
+        st.warning('Battle ID not found in the dataset.')
+    else:
+        round_number = round_info['Round Name'].values[0].lower()
+        round_number = round_number.replace(' ', '')
+       
+
+        # Construct filenames for the round
+        if 'Loser' in bracket_info:
+            df1_filename = f'losers_brackets_{round_number}.csv'
+            df2_filename = f'losers_brackets_{round_number}_result.csv'
+        else:
+            df1_filename = f'brackets_{round_number}.csv'
+            df2_filename = f'brackets_{round_number}_result.csv'
+        # Read the CSV files for the identified round
+        df1 = pd.read_csv(df1_filename)
+        df2 = pd.read_csv(df2_filename)
+
+       
+        # Filter the dataframes for the given round ID
+        df1_filtered = df1[df1['Battle ID'] == battle_id]
+        df2_filtered = df2[df2['Battle ID'] == battle_id]
+
+        if df1_filtered.empty or df2_filtered.empty:
+            st.warning('No data found for the given Battle ID in the specified round.')
+        else:
+            # Ensure the columns are in the same order and filter rows by Round ID
+            df2_filtered = df2_filtered[df1_filtered.columns]
+
+            # Compare the two filtered dataframes and find the differences
+            diff = df1_filtered.compare(df2_filtered, keep_equal=True)
 
     # Define the round ID to focus on
     round_id = battle_id
