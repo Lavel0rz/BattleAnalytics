@@ -1,8 +1,6 @@
 name: Automate Fetch and Upload
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Runs every day at midnight UTC
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
@@ -23,10 +21,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pandas requests
 
-
-
     - name: Run fetch.py
-
       run: python scripts/fetch.py
 
     - name: Commit and push changes
