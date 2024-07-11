@@ -17,7 +17,7 @@ def fetch_and_process_data(round_index, is_losers):
             rounds = data[0]['rounds'][round_index]
             round_prefix = "brackets_"
 
-        round_name = rounds['name'].replace(' ', '').toLowerCase()
+        round_name = rounds['name'].replace(' ', '').lower()
         battles = rounds['battles']
 
         battle_data = []
