@@ -1,6 +1,6 @@
+import os
 import requests
 import pandas as pd
-import json
 
 # Function to fetch and process data for a specific round
 def fetch_and_process_data(round_index, is_losers):
@@ -17,7 +17,7 @@ def fetch_and_process_data(round_index, is_losers):
             rounds = data[0]['rounds'][round_index]
             round_prefix = "brackets_"
 
-        round_name = rounds['name'].replace(' ', '').lower()
+        round_name = rounds['name'].replace(' ', '').toLowerCase()
         battles = rounds['battles']
 
         battle_data = []
@@ -28,7 +28,11 @@ def fetch_and_process_data(round_index, is_losers):
             battle_data.append([round_name, battle_id, team1_id, team2_id])
 
         df = pd.DataFrame(battle_data, columns=['Round Name', 'Battle ID', 'Team 1 ID', 'Team 2 ID'])
-        df.to_csv(f'{round_prefix}{round_name}.csv', index=False)
+
+        # Check if the CSV already exists to prevent overwriting
+        csv_filename = f'{round_prefix}{round_name}.csv'
+        if not os.path.exists(csv_filename):
+            df.to_csv(csv_filename, index=False)
 
         result_df = pd.DataFrame(columns=['Team ID', 'Team Name'] + [f'{pos} Gotchi Special ID' for pos in gotchi_positions])
 
@@ -60,7 +64,10 @@ def fetch_and_process_data(round_index, is_losers):
         merged_df = merged_df.merge(result_df_team1, on='Team 1 ID', how='left')
         merged_df = merged_df.merge(result_df_team2, on='Team 2 ID', how='left')
 
-        merged_df.to_csv(f'{round_prefix}{round_name}_result.csv', index=False)
+        # Check if the result CSV already exists to prevent overwriting
+        result_csv_filename = f'{round_prefix}{round_name}_result.csv'
+        if not os.path.exists(result_csv_filename):
+            merged_df.to_csv(result_csv_filename, index=False)
 
     else:
         print(f"Failed to retrieve data. Status code: {response.status_code}")
@@ -76,3 +83,4 @@ gotchi_positions = ['front1', 'front2', 'front3', 'front4', 'front5',
 # Fetch and process data for the next rounds
 fetch_and_process_data(4, False) # For the next winners bracket round
 fetch_and_process_data(3, True)  # For the next losers bracket round
+
