@@ -84,6 +84,6 @@ gotchi_positions = ['front1', 'front2', 'front3', 'front4', 'front5',
                     'leader', 'sub1', 'sub2']
 
 # Fetch and process data for the next rounds
-fetch_and_process_data(7, False) # For the next winners bracket round
-fetch_and_process_data(6, True)  # For the next losers bracket round
+fetch_and_process_data(8, False) # For the next winners bracket round
+fetch_and_process_data(7, True)  # For the next losers bracket round
 
